@@ -1,0 +1,123 @@
+.lobby-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.lobby-card {
+  width: 100%;
+  max-width: 600px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  animation: slideIn 0.3s ease;
+}
+
+.lobby-card h1 {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: var(--text);
+}
+
+.no-game {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.no-game p {
+  font-size: 18px;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.no-game button {
+  margin: 0 auto;
+  display: block;
+}
+
+.game-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.game-info {
+  padding: 16px;
+  background: var(--light);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary);
+}
+
+.game-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.game-info strong {
+  color: var(--text);
+}
+
+.players-list {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.players-list h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.players-list ul {
+  list-style: none;
+}
+
+.players-list li {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.players-list li:last-child {
+  border-bottom: none;
+}
+
+.players-list .position {
+  font-size: 12px;
+  color: #888;
+  background: var(--light);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.players-list .empty {
+  text-align: center;
+  color: #888;
+  padding: 20px;
+  font-style: italic;
+}
+
+.lobby-card button {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+}
+
+@media (max-width: 480px) {
+  .lobby-card {
+    padding: 24px;
+  }
+  
+  .lobby-card h1 {
+    font-size: 24px;
+  }
+}
