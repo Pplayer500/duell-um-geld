@@ -59,6 +59,17 @@ app.include_router(auth.router)
 app.include_router(game.router)
 
 
+# ===================== HEALTH CHECK =====================
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Railway/Docker health checks"""
+    return {
+        "status": "healthy",
+        "version": settings.API_VERSION
+    }
+
+
 # ===================== WEBSOCKET ENDPOINTS =====================
 
 @app.websocket("/ws/{game_id}/{player_id}")

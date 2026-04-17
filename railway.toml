@@ -1,0 +1,14 @@
+# Railway Deployment Configuration
+# Diese Datei wird von Railway verwendet für automatisches Deployment
+
+[build]
+builder = "dockerfile"
+
+[build.dockerfile]
+path = "backend/Dockerfile"
+
+[env]
+PYTHONUNBUFFERED = "1"
+DATABASE_URL = "${{ secrets.DATABASE_URL }}"
+REDIS_URL = "${{ secrets.REDIS_URL }}"
+DEBUG = "false"
