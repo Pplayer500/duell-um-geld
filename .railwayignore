@@ -1,0 +1,9 @@
+*
+!backend/
+!backend.Dockerfile
+!railway.json
+!frontend/
+.git
+.gitignore
+node_modules
+__pycache__
