@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 // Production: use Railway backend, Development: use localhost
+// Force rebuild
 let API_BASE_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:8000' 
   : 'https://duell-um-geld-production.up.railway.app'
