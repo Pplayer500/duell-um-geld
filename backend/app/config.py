@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, Union, List
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -19,13 +20,19 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://user:password@localhost:5432/duell_um_geld"
     REDIS_URL: str = "redis://localhost:6379"
     
-    # CORS - for production, set to your domain
-    CORS_ORIGINS: list = [
+    # CORS - accepts string or list, always returns list
+    CORS_ORIGINS: Union[str, List[str]] = [
         "http://localhost:5173", 
-        "http://localhost:3000",
-        "http://localhost",
-        "http://127.0.0.1:5173"
+        "http://localhost:3000"
     ]
+    
+    @field_validator('CORS_ORIGINS', mode='before')
+    @classmethod
+    def parse_cors_origins(cls, v):
+        """Convert comma-separated string to list if needed"""
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(',') if origin.strip()]
+        return v
     
     # Game settings
     MAX_PLAYERS_PER_GAME: int = 100
