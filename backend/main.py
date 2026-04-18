@@ -36,7 +36,6 @@ async def lifespan(app: FastAPI):
     logger.info("🛑 Application shutting down...")
     close_db()
 
-
 # Create FastAPI app
 app = FastAPI(
     title=settings.API_TITLE,
