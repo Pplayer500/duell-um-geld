@@ -33,6 +33,13 @@ class LogoutRequest(BaseModel):
     token: str
 
 
+# CORS Preflight handler
+@router.options("/login")
+async def login_options():
+    """CORS preflight for login"""
+    return {}
+
+
 @router.post("/login", response_model=LoginResponse)
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
     """Login or create player"""
@@ -77,6 +84,13 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=f"Login failed: {str(e)}")
 
 
+# CORS Preflight handler for logout
+@router.options("/logout")
+async def logout_options():
+    """CORS preflight for logout"""
+    return {}
+
+
 @router.post("/logout")
 async def logout(request: LogoutRequest, db: Session = Depends(get_db)):
     """Logout player"""
@@ -97,6 +111,13 @@ async def logout(request: LogoutRequest, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Logout failed: {str(e)}")
+
+
+# CORS Preflight handler for verify
+@router.options("/verify")
+async def verify_options():
+    """CORS preflight for verify"""
+    return {}
 
 
 @router.get("/verify")
