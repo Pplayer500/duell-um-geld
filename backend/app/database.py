@@ -51,7 +51,7 @@ def get_db():
 def init_db():
     """Initialize database"""
     # Import models HERE to ensure Base is set up
-    from app.models.simplified_models import PlayerDB
+    from app.models.database_models import GameDB, PlayerDB, AnswerDB, SessionDB, GameRoundDB
     
     Base.metadata.create_all(bind=engine)
     logger.info("✅ Database initialized")
