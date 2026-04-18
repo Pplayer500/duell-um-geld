@@ -56,9 +56,19 @@ class GameDB(Base):
     started_at = Column(DateTime(timezone=True), nullable=True)
     ended_at = Column(DateTime(timezone=True), nullable=True)
     
-    # Relationships
-    players = relationship("PlayerDB", back_populates="game", cascade="all, delete-orphan")
-    answers = relationship("AnswerDB", back_populates="game", cascade="all, delete-orphan")
+    # Relationships - specify foreign_keys explicitly to avoid ambiguity
+    players = relationship(
+        "PlayerDB",
+        back_populates="game",
+        cascade="all, delete-orphan",
+        foreign_keys="[PlayerDB.game_id]"
+    )
+    answers = relationship(
+        "AnswerDB",
+        back_populates="game",
+        cascade="all, delete-orphan",
+        foreign_keys="[AnswerDB.game_id]"
+    )
 
 
 class PlayerDB(Base):

@@ -1,20 +1,31 @@
 """
-Database configuration - SQLite for local testing
+Database configuration - SQLite for local testing, PostgreSQL for production
 """
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, declarative_base
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
-# Hardcode SQLite for now (local testing)
-DATABASE_URL = "sqlite:///./game.db"
+# Use SQLite by default for local dev
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./game.db")
+
+# For local development, force SQLite if DATABASE_URL is not explicitly a real PostgreSQL URL
+if "postgresql" not in DATABASE_URL or "localhost" in DATABASE_URL or "127.0.0.1" in DATABASE_URL:
+    DATABASE_URL = "sqlite:///./game.db"
+
+logger.info(f"📦 Using database: {DATABASE_URL.split('@')[0] if '@' in DATABASE_URL else 'SQLite'}")
 
 # Create engine
+connect_args = {}
+if "sqlite" in DATABASE_URL:
+    connect_args = {"check_same_thread": False}
+
 engine = create_engine(
     DATABASE_URL,
     echo=False,
-    connect_args={"check_same_thread": False}
+    connect_args=connect_args
 )
 
 # Session factory
@@ -39,6 +50,9 @@ def get_db():
 
 def init_db():
     """Initialize database"""
+    # Import models HERE to ensure Base is set up
+    from app.models.simplified_models import PlayerDB
+    
     Base.metadata.create_all(bind=engine)
     logger.info("✅ Database initialized")
 
@@ -46,6 +60,8 @@ def init_db():
 def close_db():
     """Close database"""
     engine.dispose()
+
+
 
 
 

@@ -62,10 +62,17 @@ app.include_router(game.router)
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint for Railway/Docker health checks"""
+    """Health check endpoint"""
+    return {"status": "ok"}
+
+
+@app.get("/")
+async def root():
+    """Root endpoint"""
     return {
-        "status": "healthy",
-        "version": settings.API_VERSION
+        "name": settings.API_TITLE,
+        "version": settings.API_VERSION,
+        "description": settings.API_DESCRIPTION
     }
 
 

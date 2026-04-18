@@ -2,8 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, validator
 from typing import Optional
 import uuid
-import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime
 from app.database import get_db
 from app.config import settings
 from sqlalchemy.orm import Session
@@ -39,7 +38,7 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
     """Login or create player"""
     
     try:
-        from app.models.database_models import PlayerDB
+        from app.models.simplified_models import PlayerDB
         
         player_id = str(uuid.uuid4())
         is_host = False
@@ -48,38 +47,19 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
         if request.password and request.password == settings.HOST_PASSWORD:
             is_host = True
             player_id = "host_" + str(uuid.uuid4())
-        else:
-            # Überprüfe ob normaler Spieler bereits existiert
-            existing_player = db.query(PlayerDB).filter(
-                PlayerDB.name == request.name.strip(),
-                PlayerDB.game_id == None  # Not in a game
-            ).first()
-            
-            if existing_player:
-                player_id = existing_player.player_id
         
         # Generate session token
         token = str(uuid.uuid4())
         
-        # Erstelle oder update Player
-        player = db.query(PlayerDB).filter(PlayerDB.player_id == player_id).first()
-        
-        if player:
-            # Update existing player
-            player.session_token = token
-            player.last_seen = datetime.utcnow()
-            player.name = request.name.strip()
-        else:
-            # Create new player
-            player = PlayerDB(
-                player_id=player_id,
-                name=request.name.strip(),
-                session_token=token,
-                position=0,
-                game_id=None
-            )
-            db.add(player)
-        
+        # Create new player
+        player = PlayerDB(
+            player_id=player_id,
+            name=request.name.strip(),
+            session_token=token,
+            is_host=is_host,
+            last_seen=datetime.utcnow()
+        )
+        db.add(player)
         db.commit()
         db.refresh(player)
         
@@ -92,6 +72,8 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
     
     except Exception as e:
         db.rollback()
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=400, detail=f"Login failed: {str(e)}")
 
 
@@ -100,7 +82,7 @@ async def logout(request: LogoutRequest, db: Session = Depends(get_db)):
     """Logout player"""
     
     try:
-        from app.models.database_models import PlayerDB
+        from app.models.simplified_models import PlayerDB
         
         player = db.query(PlayerDB).filter(
             PlayerDB.session_token == request.token
@@ -122,7 +104,7 @@ async def verify_token(token: str, db: Session = Depends(get_db)):
     """Verify if token is valid"""
     
     try:
-        from app.models.database_models import PlayerDB
+        from app.models.simplified_models import PlayerDB
         
         player = db.query(PlayerDB).filter(
             PlayerDB.session_token == token
@@ -135,7 +117,7 @@ async def verify_token(token: str, db: Session = Depends(get_db)):
             "valid": True,
             "player_id": player.player_id,
             "name": player.name,
-            "is_host": player.player_id.startswith("host_")
+            "is_host": player.is_host
         }
     
     except HTTPException:
