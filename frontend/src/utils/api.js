@@ -1,9 +1,12 @@
 import axios from 'axios'
 
 // Production: use Railway backend, Development: use localhost
-const API_BASE_URL = 
+let API_BASE_URL = 
   import.meta.env.VITE_API_URL || 
   (window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://duell-um-geld-production.up.railway.app')
+
+// Remove trailing slash if present
+API_BASE_URL = API_BASE_URL.replace(/\/$/, '')
 
 export const API = axios.create({
   baseURL: API_BASE_URL,
