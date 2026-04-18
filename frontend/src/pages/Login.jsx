@@ -14,7 +14,7 @@ function Login({ onLogin }) {
     setLoading(true)
 
     try {
-      const response = await API.post('/auth/login', {
+      const response = await API.post('/api/auth/login', {
         name: playerName,
         password: hostPassword || undefined
       })
