@@ -5,7 +5,8 @@ import logging
 import json
 
 from app.config import settings
-from app.routes import auth, game
+from app.routes import auth
+# from app.routes import game  # TODO: Phase 2
 from app.websockets import connection_manager
 from app.game_engine import GameEngine
 from app.database import init_db, close_db
@@ -55,7 +56,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router)
-app.include_router(game.router)
+# app.include_router(game.router)  # TODO: Phase 2
 
 
 # ===================== HEALTH CHECK =====================
