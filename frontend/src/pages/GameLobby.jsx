@@ -94,15 +94,6 @@ function GameLobby({ onStartGame }) {
           <div className="no-game">
             <p>Noch kein Spiel</p>
             
-            {isHost && (
-              <>
-                <button onClick={createGame} disabled={loading} className="primary">
-                  {loading ? 'Erstelle...' : 'Spiel erstellen ➕'}
-                </button>
-                <p>Oder:</p>
-              </>
-            )}
-            
             <div className="join-section">
               <input
                 type="text"
