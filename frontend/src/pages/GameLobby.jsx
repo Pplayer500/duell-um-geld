@@ -22,6 +22,11 @@ function GameLobby({ onStartGame }) {
     try {
       const response = await API.get(`/game/status/${gameId}`)
       setPlayers(Object.values(response.data.players || {}))
+      
+      // Wenn Spiel bereits gestartet wurde, zur game-Seite gehen
+      if (response.data.state && response.data.state !== 'lobby') {
+        onStartGame()
+      }
     } catch (err) {
       console.error('Error loading game status:', err)
     }

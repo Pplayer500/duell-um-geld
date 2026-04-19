@@ -16,7 +16,8 @@ function App() {
       const isHost = localStorage.getItem('is_host') === 'true'
       setToken(token)
       setIsHost(isHost)
-      setCurrentPage(isHost ? 'lobby' : 'game')
+      // Immer zur Lobby beim Reload - GameLobby wird überprüfen, ob Spiel bereits gestartet wurde
+      setCurrentPage('lobby')
     }
   }, [])
 
