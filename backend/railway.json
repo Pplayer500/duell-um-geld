@@ -1,0 +1,25 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "dockerfile"
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
+    "restartPolicyMaxRetries": 5
+  },
+  "variables": {
+    "DEBUG": {
+      "value": "False",
+      "description": "Disable debug mode in production"
+    },
+    "SECRET_KEY": {
+      "description": "JWT secret key - set this in Railway dashboard",
+      "reference": true
+    },
+    "HOST_PASSWORD": {
+      "description": "Host authentication password",
+      "reference": true
+    }
+  }
+}
