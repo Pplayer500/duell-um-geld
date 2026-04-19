@@ -25,7 +25,8 @@ function App() {
     localStorage.setItem('is_host', isHost)
     setToken(token)
     setIsHost(isHost)
-    setCurrentPage(isHost ? 'lobby' : 'game')
+    // ALLE Benutzer gehen zur Lobby - dort müssen sie ein Spiel erstellen/beitreten
+    setCurrentPage('lobby')
   }
 
   const handleLogout = () => {

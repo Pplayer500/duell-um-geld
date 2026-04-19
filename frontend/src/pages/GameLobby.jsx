@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { API } from '../utils/api'
+import useGameStore from '../store/gameStore'
 import '../styles/lobby.css'
 
 function GameLobby({ onStartGame }) {
   const [gameId, setGameId] = useState(localStorage.getItem('gameId') || '')
+  const [joinGameId, setJoinGameId] = useState('')
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(false)
+  const { isHost } = useGameStore()
 
   useEffect(() => {
     if (gameId) {
@@ -40,6 +43,29 @@ function GameLobby({ onStartGame }) {
     }
   }
 
+  const joinGame = async () => {
+    if (!joinGameId.trim()) {
+      alert('Bitte Game ID eingeben')
+      return
+    }
+    setLoading(true)
+    try {
+      await API.post('/game/join', {
+        game_id: joinGameId,
+        player_id: localStorage.getItem('player_id'),
+        name: localStorage.getItem('player_name') || 'Player'
+      })
+      setGameId(joinGameId)
+      localStorage.setItem('gameId', joinGameId)
+      setJoinGameId('')
+    } catch (err) {
+      alert('Fehler beim Beitreten: ' + (err.response?.data?.detail || 'Unbekannter Fehler'))
+      console.error('Error joining game:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const startGame = async () => {
     setLoading(true)
     try {
@@ -61,10 +87,29 @@ function GameLobby({ onStartGame }) {
 
         {!gameId ? (
           <div className="no-game">
-            <p>Noch kein Spiel erstellt</p>
-            <button onClick={createGame} disabled={loading}>
-              {loading ? 'Creating...' : 'Spiel erstellen ➕'}
-            </button>
+            <p>Noch kein Spiel</p>
+            
+            {isHost && (
+              <>
+                <button onClick={createGame} disabled={loading} className="primary">
+                  {loading ? 'Erstelle...' : 'Spiel erstellen ➕'}
+                </button>
+                <p>Oder:</p>
+              </>
+            )}
+            
+            <div className="join-section">
+              <input
+                type="text"
+                placeholder="Game ID eingeben"
+                value={joinGameId}
+                onChange={(e) => setJoinGameId(e.target.value)}
+                disabled={loading}
+              />
+              <button onClick={joinGame} disabled={loading}>
+                {loading ? 'Beitritt...' : 'Beitreten 🤝'}
+              </button>
+            </div>
           </div>
         ) : (
           <div className="game-setup">
@@ -89,13 +134,19 @@ function GameLobby({ onStartGame }) {
               )}
             </div>
 
-            <button 
-              onClick={startGame} 
-              disabled={loading || players.length < 2}
-              className="primary"
-            >
-              {loading ? 'Starting...' : 'Spiel starten 🎮'}
-            </button>
+            {isHost && (
+              <button 
+                onClick={startGame} 
+                disabled={loading || players.length < 2}
+                className="primary"
+              >
+                {loading ? 'Starting...' : 'Spiel starten 🎮'}
+              </button>
+            )}
+            
+            {!isHost && (
+              <p className="waiting">Warte bis Host das Spiel startet...</p>
+            )}
           </div>
         )}
       </div>

@@ -25,6 +25,7 @@ function Login({ onLogin }) {
       localStorage.setItem('token', token)
       localStorage.setItem('player_id', player_id)
       localStorage.setItem('is_host', is_host)
+      localStorage.setItem('player_name', playerName)
       
       onLogin(token, is_host)
     } catch (err) {
@@ -37,7 +38,7 @@ function Login({ onLogin }) {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1>🎲 Duell um Geld</h1>
+        <h1>🎲 Duell um die Geld 🎲</h1>
         <p className="subtitle">Wer nicht blufft, verliert! 😎</p>
 
         <form onSubmit={handleSubmit}>
