@@ -5,9 +5,12 @@ import '../styles/lobby.css'
 
 function GameLobby({ onStartGame }) {
   const [gameId, setGameId] = useState(localStorage.getItem('gameId') || '')
+  const [customGameId, setCustomGameId] = useState('')
   const [joinGameId, setJoinGameId] = useState('')
+  const [playerName, setPlayerName] = useState(localStorage.getItem('player_name') || '')
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState('dashboard')
   const { isHost } = useGameStore()
 
   useEffect(() => {
@@ -40,9 +43,30 @@ function GameLobby({ onStartGame }) {
       })
       const newGameId = response.data.game_id
       setGameId(newGameId)
+      setCustomGameId(newGameId)
       localStorage.setItem('gameId', newGameId)
     } catch (err) {
       console.error('Error creating game:', err)
+      alert('Fehler beim Erstellen des Spiels')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateGameId = async () => {
+    if (!customGameId.trim()) {
+      alert('Bitte Game ID eingeben')
+      return
+    }
+    setLoading(true)
+    try {
+      // Hier könnten wir eine API Call machen um die Game ID zu aktualisieren
+      // Für jetzt speichern wir sie lokal
+      setGameId(customGameId)
+      localStorage.setItem('gameId', customGameId)
+    } catch (err) {
+      console.error('Error updating game ID:', err)
+      alert('Fehler beim Aktualisieren der Game ID')
     } finally {
       setLoading(false)
     }
@@ -53,12 +77,19 @@ function GameLobby({ onStartGame }) {
       alert('Bitte Game ID eingeben')
       return
     }
+    if (!playerName.trim()) {
+      alert('Bitte Namen eingeben')
+      return
+    }
     setLoading(true)
     try {
+      const playerId = localStorage.getItem('player_id')
+      localStorage.setItem('player_name', playerName)
+      
       await API.post('/api/game/join', {
         game_id: joinGameId,
-        player_id: localStorage.getItem('player_id'),
-        name: localStorage.getItem('player_name') || 'Player'
+        player_id: playerId,
+        name: playerName
       })
       setGameId(joinGameId)
       localStorage.setItem('gameId', joinGameId)
@@ -80,80 +111,187 @@ function GameLobby({ onStartGame }) {
       onStartGame()
     } catch (err) {
       console.error('Error starting game:', err)
+      alert('Fehler beim Starten des Spiels')
     } finally {
       setLoading(false)
     }
   }
 
-  return (
-    <div className="lobby-container">
-      <div className="lobby-card">
-        <h1>Lobby</h1>
-
-        {!gameId ? (
-          <div className="no-game">
-            <p>Noch kein Spiel</p>
+  // Spieler-Join-Screen
+  if (!gameId) {
+    return (
+      <div className="lobby-container">
+        <div className="join-screen">
+          <div className="join-card">
+            <h1>🎮 Spiel beitreten</h1>
             
-            {isHost && (
-              <>
-                <button onClick={createGame} disabled={loading} className="primary">
-                  {loading ? 'Erstelle...' : 'Spiel erstellen ➕'}
-                </button>
-                <p>Oder:</p>
-              </>
-            )}
-            
-            <div className="join-section">
+            <div className="form-group">
+              <label>Dein Name</label>
               <input
                 type="text"
-                placeholder="Game ID eingeben"
+                placeholder="Namen eingeben..."
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Game-ID</label>
+              <input
+                type="text"
+                placeholder="Game-ID eingeben..."
                 value={joinGameId}
                 onChange={(e) => setJoinGameId(e.target.value)}
                 disabled={loading}
               />
-              <button onClick={joinGame} disabled={loading}>
-                {loading ? 'Beitritt...' : 'Beitreten 🤝'}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="game-setup">
-            <div className="game-info">
-              <p><strong>Game ID:</strong> {gameId.slice(0, 8)}...</p>
-              <p><strong>Spieler:</strong> {players.length}</p>
             </div>
 
-            <div className="players-list">
-              <h3>Spieler 👥</h3>
-              {players.length === 0 ? (
-                <p className="empty">Warte auf Spieler...</p>
-              ) : (
-                <ul>
-                  {players.map((player) => (
-                    <li key={player.player_id}>
-                      <span>{player.name}</span>
-                      <span className="position">Pos {player.position}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            <button 
+              onClick={joinGame} 
+              disabled={loading}
+              className="btn btn-primary btn-large"
+            >
+              {loading ? 'Wird beigetreten...' : 'Beitreten 🤝'}
+            </button>
 
             {isHost && (
-              <button 
-                onClick={startGame} 
-                disabled={loading || players.length < 2}
-                className="primary"
-              >
-                {loading ? 'Starting...' : 'Spiel starten 🎮'}
-              </button>
-            )}
-            
-            {!isHost && (
-              <p className="waiting">Warte bis Host das Spiel startet...</p>
+              <>
+                <div className="divider">ODER</div>
+                <button 
+                  onClick={createGame} 
+                  disabled={loading}
+                  className="btn btn-success btn-large"
+                >
+                  {loading ? 'Wird erstellt...' : 'Neues Spiel erstellen ➕'}
+                </button>
+              </>
             )}
           </div>
-        )}
+        </div>
+      </div>
+    )
+  }
+
+  // Host-Menü mit Tabs
+  if (isHost) {
+    return (
+      <div className="lobby-container">
+        <div className="host-menu">
+          <div className="menu-header">
+            <h1>🎰 Host Menü</h1>
+            <div className="game-id-display">Game-ID: <strong>{gameId.slice(0, 8).toUpperCase()}</strong></div>
+          </div>
+
+          <div className="tabs">
+            <button 
+              className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setActiveTab('dashboard')}
+            >
+              📊 Dashboard
+            </button>
+            <button 
+              className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('settings')}
+            >
+              ⚙️ Einstellungen
+            </button>
+          </div>
+
+          <div className="tab-content">
+            {activeTab === 'dashboard' && (
+              <div className="dashboard">
+                <div className="dashboard-grid">
+                  <div className="card info-card">
+                    <h3>🎰 Game-ID</h3>
+                    <div className="card-input-group">
+                      <input
+                        type="text"
+                        value={customGameId || gameId}
+                        onChange={(e) => setCustomGameId(e.target.value)}
+                        placeholder="Game-ID eingeben..."
+                        disabled={loading}
+                      />
+                      <button 
+                        onClick={updateGameId}
+                        disabled={loading}
+                        className="btn btn-small"
+                      >
+                        Speichern
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="card stat-card">
+                    <h3>👥 Spieler</h3>
+                    <div className="stat-number">{players.length}</div>
+                  </div>
+                </div>
+
+                <div className="card players-card">
+                  <h3>👥 Spielerliste</h3>
+                  {players.length === 0 ? (
+                    <p className="empty-state">Warte auf Spieler...</p>
+                  ) : (
+                    <div className="players-list">
+                      {players.map((player) => (
+                        <div key={player.player_id} className="player-item">
+                          <span className="player-name">{player.name}</span>
+                          <span className="player-position">Pos {player.position}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="card chips-card">
+                  <h3>💰 Chips</h3>
+                  <p className="empty-state">Wird noch hinzugefügt...</p>
+                </div>
+
+                <button 
+                  onClick={startGame}
+                  disabled={loading || players.length < 2}
+                  className="btn btn-primary btn-large btn-full"
+                >
+                  {loading ? 'Wird gestartet...' : '🎮 Spiel starten'}
+                </button>
+              </div>
+            )}
+
+            {activeTab === 'settings' && (
+              <div className="settings">
+                <div className="card">
+                  <h3>Einstellungen</h3>
+                  <p className="empty-state">Weitere Einstellungen folgen...</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Spieler-Wartescreen
+  return (
+    <div className="lobby-container">
+      <div className="player-waiting">
+        <div className="card">
+          <h2>⏳ Warte auf Host</h2>
+          <p className="game-id-info">Game-ID: <strong>{gameId.slice(0, 8).toUpperCase()}</strong></p>
+          
+          <div className="players-list">
+            <h3>👥 Spieler im Spiel ({players.length})</h3>
+            {players.map((player) => (
+              <div key={player.player_id} className="player-item">
+                <span className="player-name">{player.name}</span>
+              </div>
+            ))}
+          </div>
+
+          <p className="waiting-text">Der Host wird das Spiel starten...</p>
+        </div>
       </div>
     </div>
   )
