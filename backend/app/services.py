@@ -1,8 +1,8 @@
 """
-Game Service - Business logic for poker game
+Game Service - Business logic for poker game (Synchronous)
 Uses repositories to persist data
 """
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from app.repositories import GameRepository, PlayerRepository, AnswerRepository, SessionRepository
 from app.config import settings
 from app.models.database_models import GameStateEnum, PlayerStatusEnum
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class GameService:
     """Handles all game business logic"""
     
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: Session):
         self.db = db
         self.games = GameRepository(db)
         self.players = PlayerRepository(db)
@@ -23,21 +23,21 @@ class GameService:
     
     # ==================== GAME CREATION ====================
     
-    async def create_game(self, host_id: str) -> str:
+    def create_game(self, host_id: str) -> str:
         """Create new game"""
-        game_id = await self.games.create_game(host_id)
+        game_id = self.games.create_game(host_id)
         logger.info(f"✅ Game {game_id} created by host {host_id}")
         return game_id
     
-    async def start_game(self, game_id: str) -> tuple[bool, str]:
+    def start_game(self, game_id: str) -> tuple[bool, str]:
         """Start a game"""
-        game = await self.games.get_game(game_id)
+        game = self.games.get_game(game_id)
         
         if not game:
             return False, "Game not found"
         
         # Get player count
-        game_players = await self.players.get_game_players(game_id)
+        game_players = self.players.get_game_players(game_id)
         
         if len(game_players) < settings.MIN_PLAYERS_TO_START:
             return False, f"Need at least {settings.MIN_PLAYERS_TO_START} players to start"
@@ -46,16 +46,16 @@ class GameService:
             return False, f"Too many players (max {settings.MAX_PLAYERS_PER_GAME})"
         
         # Update game state
-        await self.games.update_game_state(game_id, GameStateEnum.QUESTION_ACTIVE.value)
+        self.games.update_game_state(game_id, GameStateEnum.QUESTION_ACTIVE.value)
         logger.info(f"✅ Game {game_id} started with {len(game_players)} players")
         
         return True, "Game started"
     
     # ==================== PLAYER MANAGEMENT ====================
     
-    async def join_game(self, game_id: str, player_id: str, name: str) -> tuple[bool, str]:
+    def join_game(self, game_id: str, player_id: str, name: str) -> tuple[bool, str]:
         """Add player to game"""
-        game = await self.games.get_game(game_id)
+        game = self.games.get_game(game_id)
         
         if not game:
             return False, "Game not found"
@@ -64,14 +64,14 @@ class GameService:
             return False, "Game already started"
         
         # Get current player count
-        game_players = await self.players.get_game_players(game_id)
+        game_players = self.players.get_game_players(game_id)
         
         if len(game_players) >= settings.MAX_PLAYERS_PER_GAME:
             return False, f"Game full (max {settings.MAX_PLAYERS_PER_GAME})"
         
         # Add player
         position = len(game_players) + 1
-        success = await self.players.add_player_to_game(game_id, player_id, name, position)
+        success = self.players.add_player_to_game(game_id, player_id, name, position)
         
         if success:
             logger.info(f"✅ Player {name} ({player_id}) joined game {game_id}")
@@ -81,15 +81,15 @@ class GameService:
     
     # ==================== BETTING & ACTIONS ====================
     
-    async def place_bet(self, game_id: str, player_id: str, amount: int) -> tuple[bool, str]:
+    def place_bet(self, game_id: str, player_id: str, amount: int) -> tuple[bool, str]:
         """Place a bet"""
-        player = await self.players.get_player(player_id)
+        player = self.players.get_player(player_id)
         
         if not player or player.game_id != game_id:
             return False, "Player not in game"
         
         # Update player's current bet
-        success = await self.players.update_player_bet(player_id, amount)
+        success = self.players.update_player_bet(player_id, amount)
         
         if success:
             logger.info(f"✅ Player {player_id} bet {amount}")
@@ -97,9 +97,9 @@ class GameService:
         else:
             return False, "Could not place bet"
     
-    async def fold(self, game_id: str, player_id: str) -> tuple[bool, str]:
+    def fold(self, game_id: str, player_id: str) -> tuple[bool, str]:
         """Fold (player gives up)"""
-        success = await self.players.update_player_status(player_id, PlayerStatusEnum.FOLDED.value)
+        success = self.players.update_player_status(player_id, PlayerStatusEnum.FOLDED.value)
         
         if success:
             logger.info(f"✅ Player {player_id} folded")
@@ -107,9 +107,9 @@ class GameService:
         else:
             return False, "Could not fold"
     
-    async def go_all_in(self, game_id: str, player_id: str) -> tuple[bool, str]:
+    def go_all_in(self, game_id: str, player_id: str) -> tuple[bool, str]:
         """Go all-in"""
-        success = await self.players.update_player_status(player_id, PlayerStatusEnum.ALL_IN.value)
+        success = self.players.update_player_status(player_id, PlayerStatusEnum.ALL_IN.value)
         
         if success:
             logger.info(f"✅ Player {player_id} went all-in")
@@ -119,14 +119,14 @@ class GameService:
     
     # ==================== QUESTIONS & ANSWERS ====================
     
-    async def submit_answer(self, game_id: str, player_id: str, question_index: int, answer: float) -> tuple[bool, str]:
+    def submit_answer(self, game_id: str, player_id: str, question_index: int, answer: float) -> tuple[bool, str]:
         """Submit answer to a question"""
-        player = await self.players.get_player(player_id)
+        player = self.players.get_player(player_id)
         
         if not player or player.game_id != game_id:
             return False, "Player not in game"
         
-        success = await self.answers.save_answer(game_id, player_id, question_index, answer)
+        success = self.answers.save_answer(game_id, player_id, question_index, answer)
         
         if success:
             logger.info(f"✅ Player {player_id} answered question {question_index}")
@@ -136,14 +136,14 @@ class GameService:
     
     # ==================== GAME STATE ====================
     
-    async def get_game_state(self, game_id: str) -> dict:
+    def get_game_state(self, game_id: str) -> dict:
         """Get current game state"""
-        game = await self.games.get_game(game_id)
+        game = self.games.get_game(game_id)
         
         if not game:
             return None
         
-        game_players = await self.players.get_game_players(game_id)
+        game_players = self.players.get_game_players(game_id)
         
         return {
             "game_id": game.game_id,
@@ -163,9 +163,9 @@ class GameService:
             ]
         }
     
-    async def end_game(self, game_id: str) -> tuple[bool, str]:
+    def end_game(self, game_id: str) -> tuple[bool, str]:
         """End game"""
-        success = await self.games.end_game(game_id)
+        success = self.games.end_game(game_id)
         
         if success:
             logger.info(f"✅ Game {game_id} ended")

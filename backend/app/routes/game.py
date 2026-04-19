@@ -51,11 +51,11 @@ class AnswerRequest(BaseModel):
 # ==================== GAME ENDPOINTS ====================
 
 @router.post("/create", response_model=CreateGameResponse)
-async def create_game(request: CreateGameRequest, db = Depends(get_db)):
+def create_game(request: CreateGameRequest, db = Depends(get_db)):
     """Create a new game"""
     try:
         service = GameService(db)
-        game_id = await service.create_game(request.host_id)
+        game_id = service.create_game(request.host_id)
         return CreateGameResponse(game_id=game_id)
     except Exception as e:
         logger.error(f"Error creating game: {e}")
@@ -63,11 +63,11 @@ async def create_game(request: CreateGameRequest, db = Depends(get_db)):
 
 
 @router.post("/join")
-async def join_game(request: JoinGameRequest, db = Depends(get_db)):
+def join_game(request: JoinGameRequest, db = Depends(get_db)):
     """Join an existing game"""
     try:
         service = GameService(db)
-        success, message = await service.join_game(request.game_id, request.player_id, request.name)
+        success, message = service.join_game(request.game_id, request.player_id, request.name)
         
         if success:
             return {"status": "joined", "message": message}
@@ -81,11 +81,11 @@ async def join_game(request: JoinGameRequest, db = Depends(get_db)):
 
 
 @router.post("/start")
-async def start_game(request: StartGameRequest, db = Depends(get_db)):
+def start_game(request: StartGameRequest, db = Depends(get_db)):
     """Start a game"""
     try:
         service = GameService(db)
-        success, message = await service.start_game(request.game_id)
+        success, message = service.start_game(request.game_id)
         
         if success:
             return {"status": "started", "message": message}
@@ -99,11 +99,11 @@ async def start_game(request: StartGameRequest, db = Depends(get_db)):
 
 
 @router.post("/bet")
-async def place_bet(request: BetRequest, db = Depends(get_db)):
+def place_bet(request: BetRequest, db = Depends(get_db)):
     """Place a bet"""
     try:
         service = GameService(db)
-        success, message = await service.place_bet(request.game_id, request.player_id, request.amount)
+        success, message = service.place_bet(request.game_id, request.player_id, request.amount)
         
         if success:
             return {"status": "bet_placed", "amount": request.amount}
@@ -117,11 +117,11 @@ async def place_bet(request: BetRequest, db = Depends(get_db)):
 
 
 @router.post("/fold")
-async def fold(request: ActionRequest, db = Depends(get_db)):
+def fold(request: ActionRequest, db = Depends(get_db)):
     """Fold (player gives up)"""
     try:
         service = GameService(db)
-        success, message = await service.fold(request.game_id, request.player_id)
+        success, message = service.fold(request.game_id, request.player_id)
         
         if success:
             return {"status": "folded"}
@@ -135,11 +135,11 @@ async def fold(request: ActionRequest, db = Depends(get_db)):
 
 
 @router.post("/all-in")
-async def all_in(request: ActionRequest, db = Depends(get_db)):
+def all_in(request: ActionRequest, db = Depends(get_db)):
     """Go all-in"""
     try:
         service = GameService(db)
-        success, message = await service.go_all_in(request.game_id, request.player_id)
+        success, message = service.go_all_in(request.game_id, request.player_id)
         
         if success:
             return {"status": "all_in"}
@@ -153,11 +153,11 @@ async def all_in(request: ActionRequest, db = Depends(get_db)):
 
 
 @router.post("/answer")
-async def submit_answer(request: AnswerRequest, db = Depends(get_db)):
+def submit_answer(request: AnswerRequest, db = Depends(get_db)):
     """Submit answer to a question"""
     try:
         service = GameService(db)
-        success, message = await service.submit_answer(
+        success, message = service.submit_answer(
             request.game_id,
             request.player_id,
             request.question_index,
@@ -176,11 +176,11 @@ async def submit_answer(request: AnswerRequest, db = Depends(get_db)):
 
 
 @router.get("/state/{game_id}")
-async def get_game_state(game_id: str, db = Depends(get_db)):
+def get_game_state(game_id: str, db = Depends(get_db)):
     """Get current game state"""
     try:
         service = GameService(db)
-        state = await service.get_game_state(game_id)
+        state = service.get_game_state(game_id)
         
         if not state:
             raise HTTPException(status_code=404, detail="Game not found")
@@ -194,11 +194,11 @@ async def get_game_state(game_id: str, db = Depends(get_db)):
 
 
 @router.post("/end/{game_id}")
-async def end_game(game_id: str, db = Depends(get_db)):
+def end_game(game_id: str, db = Depends(get_db)):
     """End a game"""
     try:
         service = GameService(db)
-        success, message = await service.end_game(game_id)
+        success, message = service.end_game(game_id)
         
         if success:
             return {"status": "ended"}
