@@ -45,7 +45,7 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
     """Login or create player"""
     
     try:
-        from app.models.simplified_models import PlayerDB
+        from app.models.database_models import PlayerDB
         
         player_id = str(uuid.uuid4())
         is_host = False
@@ -96,7 +96,7 @@ async def logout(request: LogoutRequest, db: Session = Depends(get_db)):
     """Logout player"""
     
     try:
-        from app.models.simplified_models import PlayerDB
+        from app.models.database_models import PlayerDB
         
         player = db.query(PlayerDB).filter(
             PlayerDB.session_token == request.token
