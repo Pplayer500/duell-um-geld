@@ -20,7 +20,7 @@ function GameLobby({ onStartGame }) {
 
   const loadGameStatus = async () => {
     try {
-      const response = await API.get(`/game/status/${gameId}`)
+      const response = await API.get(`/api/game/state/${gameId}`)
       setPlayers(Object.values(response.data.players || {}))
       
       // Wenn Spiel bereits gestartet wurde, zur game-Seite gehen
@@ -35,7 +35,7 @@ function GameLobby({ onStartGame }) {
   const createGame = async () => {
     setLoading(true)
     try {
-      const response = await API.post('/game/create', {
+      const response = await API.post('/api/game/create', {
         host_id: localStorage.getItem('player_id')
       })
       const newGameId = response.data.game_id
@@ -55,7 +55,7 @@ function GameLobby({ onStartGame }) {
     }
     setLoading(true)
     try {
-      await API.post('/game/join', {
+      await API.post('/api/game/join', {
         game_id: joinGameId,
         player_id: localStorage.getItem('player_id'),
         name: localStorage.getItem('player_name') || 'Player'
@@ -74,7 +74,7 @@ function GameLobby({ onStartGame }) {
   const startGame = async () => {
     setLoading(true)
     try {
-      await API.post('/game/start', {
+      await API.post('/api/game/start', {
         game_id: gameId
       })
       onStartGame()
@@ -88,7 +88,7 @@ function GameLobby({ onStartGame }) {
   return (
     <div className="lobby-container">
       <div className="lobby-card">
-        <h1>🎲 Lobby</h1>
+        <h1>Lobby</h1>
 
         {!gameId ? (
           <div className="no-game">
