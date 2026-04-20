@@ -58,8 +58,18 @@ class PlayerDB(Base):
 
     player_id = Column(String(36), primary_key=True, unique=True, index=True)
     name = Column(String(100), nullable=False, index=True)
+    username = Column(String(100), unique=True, nullable=True, index=True)  # For players (set on 1st login via popup)
+    password_hash = Column(String(255), nullable=True)  # Individual for hosts, global for players
+    
+    # Role management
+    role = Column(String(50), default="player")  # "player", "host", "main_host"
+    
     session_token = Column(String(500), unique=True, nullable=True, index=True)
     game_id = Column(String(36), ForeignKey("games.game_id"), nullable=True)
+    
+    # Account management
+    awards = Column(Integer, default=0)  # Achievements/points
+    first_login_completed = Column(Boolean, default=False)  # For username popup on 1st login
     
     # Player state in game
     status = Column(String(50), default=PlayerStatusEnum.ACTIVE.value)
@@ -75,6 +85,7 @@ class PlayerDB(Base):
     # UI color
     color = Column(String(50), nullable=True)
     is_host = Column(Boolean, default=False)
+    is_online = Column(Boolean, default=False)  # Online status
     
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
