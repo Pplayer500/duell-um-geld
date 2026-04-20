@@ -172,3 +172,20 @@ class GameService:
             return True, "Game ended"
         else:
             return False, "Could not end game"
+    
+    def get_all_games(self) -> dict:
+        """Get all active games"""
+        games = self.games.get_all_games()
+        result = {}
+        
+        for game in games:
+            game_players = self.players.get_game_players(game.game_id)
+            result[game.game_id] = {
+                "game_id": game.game_id,
+                "state": game.state,
+                "players": {p.player_id: {"name": p.name, "status": p.status} for p in game_players},
+                "host_id": game.host_id,
+                "created_at": str(game.created_at) if game.created_at else None
+            }
+        
+        return result

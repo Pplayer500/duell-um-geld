@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from app.database import get_db
 from app.services import GameService
 import logging
@@ -11,6 +11,14 @@ router = APIRouter(prefix="/api/game", tags=["game"])
 
 
 # ==================== PYDANTIC SCHEMAS ====================
+
+class GameListResponse(BaseModel):
+    game_id: str
+    state: str
+    players: Dict[str, Any]
+    host_id: Optional[str] = None
+    created_at: Optional[str] = None
+
 
 class CreateGameRequest(BaseModel):
     host_id: str
@@ -49,6 +57,30 @@ class AnswerRequest(BaseModel):
 
 
 # ==================== GAME ENDPOINTS ====================
+
+@router.get("/list", response_model=List[GameListResponse])
+def list_games(db = Depends(get_db)):
+    """Get all active games"""
+    try:
+        service = GameService(db)
+        games = service.get_all_games()
+        
+        # Convert to response format
+        response = []
+        for game_id, game_data in games.items():
+            response.append(GameListResponse(
+                game_id=game_id,
+                state=game_data.get('state', 'unknown'),
+                players=game_data.get('players', {}),
+                host_id=game_data.get('host_id'),
+                created_at=game_data.get('created_at')
+            ))
+        
+        return response
+    except Exception as e:
+        logger.error(f"Error listing games: {e}")
+        raise HTTPException(status_code=500, detail="Could not list games")
+
 
 @router.post("/create", response_model=CreateGameResponse)
 def create_game(request: CreateGameRequest, db = Depends(get_db)):
