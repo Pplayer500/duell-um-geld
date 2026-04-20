@@ -117,10 +117,26 @@ function GameLobby({ onStartGame }) {
     }
   }
 
+  const handleLogout = () => {
+    if (window.confirm('Wirklicht auslögen?')) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('player_id')
+      localStorage.removeItem('is_host')
+      localStorage.removeItem('player_name')
+      localStorage.removeItem('gameId')
+      window.location.reload()
+    }
+  }
+
   // Spieler-Join-Screen
   if (!gameId) {
     return (
       <div className="lobby-container">
+        <div className="logout-header">
+          <button onClick={handleLogout} className="btn btn-logout">
+            🚪 Ausloggen
+          </button>
+        </div>
         <div className="join-screen">
           <div className="join-card">
             <h1>🎮 Spiel beitreten</h1>
@@ -177,6 +193,11 @@ function GameLobby({ onStartGame }) {
   if (isHost) {
     return (
       <div className="lobby-container">
+        <div className="logout-header">
+          <button onClick={handleLogout} className="btn btn-logout">
+            🚪 Ausloggen
+          </button>
+        </div>
         <div className="host-menu">
           <div className="menu-header">
             <h1>🎰 Host Menü</h1>
@@ -276,6 +297,11 @@ function GameLobby({ onStartGame }) {
   // Spieler-Wartescreen
   return (
     <div className="lobby-container">
+      <div className="logout-header">
+        <button onClick={handleLogout} className="btn btn-logout">
+          🚪 Ausloggen
+        </button>
+      </div>
       <div className="player-waiting">
         <div className="card">
           <h2>⏳ Warte auf Host</h2>

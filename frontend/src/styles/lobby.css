@@ -1,11 +1,43 @@
 /* ==================== LOBBY CONTAINER ==================== */
 .lobby-container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.logout-header {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+.btn-logout {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.btn-logout:hover {
+  background-color: rgba(255, 100, 100, 0.3);
+  border-color: rgba(255, 100, 100, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 100, 100, 0.3);
+}
+
+.btn-logout:active {
+  transform: translateY(0);
 }
 
 /* ==================== JOIN SCREEN ==================== */
