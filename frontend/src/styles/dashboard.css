@@ -1,0 +1,372 @@
+/* ==================== DASHBOARD CONTAINER ==================== */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: url('/background.png') center/cover no-repeat fixed;
+  padding: 20px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-header h1 {
+  font-size: 32px;
+  color: #333;
+  margin: 0;
+  font-weight: 700;
+}
+
+.btn-logout-main {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-logout-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+}
+
+/* ==================== TABS ==================== */
+.tabs-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.tab-button {
+  padding: 12px 24px;
+  border: none;
+  background: rgba(255, 255, 255, 0.3);
+  color: #666;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.tab-button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.tab-button:hover:not(.active) {
+  background: rgba(200, 200, 200, 0.3);
+}
+
+/* ==================== TAB CONTENT ==================== */
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tab-pane {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  min-height: 400px;
+}
+
+.tab-pane h2 {
+  font-size: 24px;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+.tab-pane h3 {
+  font-size: 18px;
+  color: #555;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+/* ==================== PASSWORD SECTION ==================== */
+.password-section {
+  background: rgba(102, 126, 234, 0.05);
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  margin-bottom: 30px;
+}
+
+.password-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.password-input-group input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border 0.3s;
+}
+
+.password-input-group input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* ==================== CREATE PLAYER SECTION ==================== */
+.create-player-section {
+  background: rgba(245, 87, 108, 0.05);
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #f5576c;
+  margin-bottom: 30px;
+}
+
+.create-player-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.create-player-form input,
+.create-player-form select {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border 0.3s;
+  flex: 1;
+  min-width: 150px;
+}
+
+.create-player-form input:focus,
+.create-player-form select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* ==================== PLAYERS TABLE ==================== */
+.players-list-section {
+  margin-top: 30px;
+}
+
+.players-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.players-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.players-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.players-table td {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.players-table tbody tr.online {
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.players-table tbody tr.offline {
+  background: rgba(200, 200, 200, 0.05);
+}
+
+.players-table tbody tr:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.status {
+  font-size: 16px;
+  text-align: center;
+}
+
+/* ==================== USERNAME EDITING ==================== */
+.username-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-edit {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.btn-edit:hover {
+  background: #764ba2;
+  transform: scale(1.1);
+}
+
+.edit-username {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-username input {
+  flex: 1;
+  padding: 8px;
+  border: 2px solid #667eea;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.edit-username input:focus {
+  outline: none;
+  border-color: #764ba2;
+}
+
+.btn-small {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-success {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #45a049;
+}
+
+.btn-cancel {
+  background: #f44336;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #da190b;
+}
+
+/* ==================== BUTTONS ==================== */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* ==================== GAMES LIST ==================== */
+.games-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.game-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.game-card p {
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.game-card strong {
+  display: inline-block;
+  min-width: 80px;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .dashboard-header h1 {
+    font-size: 24px;
+  }
+
+  .tabs-container {
+    flex-wrap: wrap;
+  }
+
+  .tab-pane {
+    padding: 20px;
+  }
+
+  .create-player-form {
+    flex-direction: column;
+  }
+
+  .password-input-group {
+    flex-direction: column;
+  }
+
+  .players-table {
+    font-size: 12px;
+  }
+
+  .players-table th,
+  .players-table td {
+    padding: 10px;
+  }
+
+  .games-list {
+    grid-template-columns: 1fr;
+  }
+}
