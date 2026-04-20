@@ -43,12 +43,16 @@
 }
 
 .login-card h1 {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   font-size: 32px;
   margin: 0 0 12px 0;
   color: var(--text);
   white-space: nowrap;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .login-card .subtitle {

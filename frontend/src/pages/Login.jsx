@@ -41,7 +41,7 @@ function Login({ onLogin }) {
         <source src="/videos/login_background.mp4" type="video/mp4" />
       </video>
       <div className="login-card">
-        <h1>🎲 Duell um die Geld 🎲</h1>
+        <h1><span>🎲</span><span>Duell um die Geld</span><span>🎲</span></h1>
         <p className="subtitle">Wer nicht blufft, verliert! 😎</p>
 
         <form onSubmit={handleSubmit}>
