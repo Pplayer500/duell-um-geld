@@ -20,14 +20,16 @@ function Login({ onLogin }) {
       })
 
       const { token, player_id, is_host } = response.data
+      const isMainHost = playerName === 'MARC'
 
       // Save to localStorage
       localStorage.setItem('token', token)
       localStorage.setItem('player_id', player_id)
       localStorage.setItem('is_host', is_host)
       localStorage.setItem('player_name', playerName)
+      localStorage.setItem('admin_password', hostPassword || 'Passwort')
       
-      onLogin(token, is_host)
+      onLogin(token, is_host, playerName, isMainHost)
     } catch (err) {
       setError(err.response?.data?.detail || 'Login fehlgeschlagen')
     } finally {

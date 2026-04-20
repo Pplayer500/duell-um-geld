@@ -3,6 +3,7 @@ import './styles/global.css'
 import Login from './pages/Login'
 import GameLobby from './pages/GameLobby'
 import PokerTable from './pages/PokerTable'
+import MainHostDashboard from './pages/MainHostDashboard'
 import useGameStore from './store/gameStore'
 
 function App() {
@@ -21,13 +22,19 @@ function App() {
     }
   }, [])
 
-  const handleLogin = (token, isHost) => {
+  const handleLogin = (token, isHost, playerName, isMainHost) => {
     localStorage.setItem('token', token)
     localStorage.setItem('is_host', isHost)
+    localStorage.setItem('player_name', playerName)
     setToken(token)
     setIsHost(isHost)
-    // ALLE Benutzer gehen zur Lobby - dort müssen sie ein Spiel erstellen/beitreten
-    setCurrentPage('lobby')
+    // MARC (Main Host) geht zum Dashboard
+    if (playerName === 'MARC' || isMainHost) {
+      setCurrentPage('dashboard')
+    } else {
+      // Andere Benutzer gehen zur Lobby
+      setCurrentPage('lobby')
+    }
   }
 
   const handleLogout = () => {
@@ -40,6 +47,9 @@ function App() {
     <div className="app">
       {currentPage === 'login' && (
         <Login onLogin={handleLogin} />
+      )}
+      {currentPage === 'dashboard' && (
+        <MainHostDashboard onLogout={handleLogout} />
       )}
       {currentPage === 'lobby' && (
         <GameLobby onStartGame={() => setCurrentPage('game')} />
