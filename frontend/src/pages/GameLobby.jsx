@@ -134,7 +134,7 @@ function GameLobby({ onStartGame }) {
       <div className="lobby-container">
         <div className="logout-header">
           <button onClick={handleLogout} className="btn btn-logout">
-            🚪 Ausloggen
+            Ausloggen
           </button>
         </div>
         <div className="join-screen">
@@ -195,7 +195,7 @@ function GameLobby({ onStartGame }) {
       <div className="lobby-container">
         <div className="logout-header">
           <button onClick={handleLogout} className="btn btn-logout">
-            🚪 Ausloggen
+            Ausloggen
           </button>
         </div>
         <div className="host-menu">
@@ -299,7 +299,7 @@ function GameLobby({ onStartGame }) {
     <div className="lobby-container">
       <div className="logout-header">
         <button onClick={handleLogout} className="btn btn-logout">
-          🚪 Ausloggen
+          Ausloggen
         </button>
       </div>
       <div className="player-waiting">
