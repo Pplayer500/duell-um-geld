@@ -48,7 +48,7 @@ const useGameStore = create((set) => ({
   setSelectedChips: (chips) => set({ selectedChips: chips }),
   
   // Notifications
-  addNotification: (message, type = 'info', icon = '', duration = 4000) => 
+  addNotification: (message, type = 'info', icon = '', duration = 5000) => 
     set((state) => {
       const id = Date.now() + Math.random()
       return {
