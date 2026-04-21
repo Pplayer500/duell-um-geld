@@ -43,14 +43,15 @@ class Settings(BaseSettings):
         super().__init__(**data)
         # CORS origins - always hardcode to avoid parsing issues
         self._cors_list = [
-            "https://duell-um-geld.vercel.app",  # Production frontend
-            "http://localhost:5173",              # Local Vite dev
-            "http://localhost:5174",              # Local Vite dev (alternate)
-            "http://localhost:5175",              # Local Vite dev (alternate)
-            "http://localhost:3000",              # Local fallback
-            "http://127.0.0.1:5173",              # Local loopback
-            "http://127.0.0.1:5174",              # Local loopback (alternate)
-            "http://127.0.0.1:5175",              # Local loopback (alternate)
+            "https://duell-um-geld.vercel.app",                              # Vercel production frontend
+            "https://duell-um-geld-frontend-production.up.railway.app",     # Railway production frontend
+            "http://localhost:5173",                                          # Local Vite dev
+            "http://localhost:5174",                                          # Local Vite dev (alternate)
+            "http://localhost:5175",                                          # Local Vite dev (alternate)
+            "http://localhost:3000",                                          # Local fallback
+            "http://127.0.0.1:5173",                                          # Local loopback
+            "http://127.0.0.1:5174",                                          # Local loopback (alternate)
+            "http://127.0.0.1:5175",                                          # Local loopback (alternate)
         ]
     
     def get_cors_origins_list(self) -> List[str]:
