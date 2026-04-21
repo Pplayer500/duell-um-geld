@@ -34,8 +34,6 @@ function MainHostDashboard({ onLogout }) {
     )
   }
 
-  const adminPassword = localStorage.getItem('admin_password') || 'Passwort'
-
   useEffect(() => {
     if (activeTab === 'players') {
       loadPlayers()
