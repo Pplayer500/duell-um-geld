@@ -12,6 +12,8 @@ function MainHostDashboard({ onLogout }) {
   const [playerPassword, setPlayerPassword] = useState('')
   const [editingUsername, setEditingUsername] = useState(null)
   const [newUsername, setNewUsername] = useState('')
+  const [showHostPasswordModal, setShowHostPasswordModal] = useState(false)
+  const [hostPassword, setHostPassword] = useState('')
 
   const adminPassword = localStorage.getItem('admin_password') || 'Passwort'
 
@@ -57,11 +59,38 @@ function MainHostDashboard({ onLogout }) {
       return
     }
 
+    // If role is 'host', show password modal instead of creating directly
+    if (newPlayerRole === 'host') {
+      setShowHostPasswordModal(true)
+      return
+    }
+
+    // For regular players, create directly
+    createPlayerInBackend(newPlayerName, newPlayerRole)
+  }
+
+  const handleConfirmHostPassword = () => {
+    if (!hostPassword.trim()) {
+      alert('Bitte Host-Passwort eingeben')
+      return
+    }
+    
+    createPlayerInBackend(newPlayerName, newPlayerRole, hostPassword)
+    setShowHostPasswordModal(false)
+    setHostPassword('')
+  }
+
+  const createPlayerInBackend = async (name, role, password = null) => {
     setLoading(true)
     try {
+      const payload = { name: name.trim(), role: role }
+      if (password) {
+        payload.password = password
+      }
+
       await API.post(
         '/api/accounts/admin/create-player',
-        { name: newPlayerName.trim(), role: newPlayerRole },
+        payload,
         { headers: { 'X-Admin-Password': adminPassword } }
       )
       setNewPlayerName('')
@@ -305,6 +334,43 @@ function MainHostDashboard({ onLogout }) {
           </div>
         )}
       </div>
+
+      {/* HOST PASSWORD MODAL */}
+      {showHostPasswordModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Host-Passwort setzen</h2>
+            <p>Gib ein Passwort für den Host "{newPlayerName}" ein:</p>
+            <div className="modal-content">
+              <input
+                type="password"
+                placeholder="Host-Passwort"
+                value={hostPassword}
+                onChange={(e) => setHostPassword(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleConfirmHostPassword()}
+              />
+            </div>
+            <div className="modal-buttons">
+              <button
+                onClick={handleConfirmHostPassword}
+                className="btn btn-primary"
+                disabled={!hostPassword.trim()}
+              >
+                Speichern
+              </button>
+              <button
+                onClick={() => {
+                  setShowHostPasswordModal(false)
+                  setHostPassword('')
+                }}
+                className="btn btn-cancel"
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

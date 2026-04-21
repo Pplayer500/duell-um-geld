@@ -16,7 +16,7 @@ function Login({ onLogin }) {
     try {
       const response = await API.post('/api/auth/login', {
         name: playerName,
-        password: hostPassword || undefined
+        password: hostPassword
       })
 
       const { token, player_id, is_host } = response.data
@@ -61,22 +61,23 @@ function Login({ onLogin }) {
           <div className="form-group">
             <input
               type="password"
-              placeholder="Host-Passwort (optional)"
+              placeholder="Passwort"
               value={hostPassword}
               onChange={(e) => setHostPassword(e.target.value)}
+              required
               disabled={loading}
             />
           </div>
 
           {error && <div className="error-message">{error}</div>}
 
-          <button type="submit" disabled={loading || !playerName}>
+          <button type="submit" disabled={loading || !playerName || !hostPassword}>
             {loading ? 'Loading...' : 'Spielen 🎮'}
           </button>
         </form>
 
         <footer>
-          <p>💡 Gib dein Namen ein oder nutze das Host-Passwort für den Admin-Modus</p>
+          <p>💡 Gib deinen Namen und dein Passwort ein</p>
         </footer>
       </div>
     </div>

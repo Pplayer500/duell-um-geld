@@ -13,12 +13,18 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 class LoginRequest(BaseModel):
     name: str
-    password: Optional[str] = None
+    password: str
     
     @validator('name')
     def validate_name(cls, v):
         if not v or len(v.strip()) < 2:
             raise ValueError("Name must be at least 2 characters")
+        return v.strip()
+    
+    @validator('password')
+    def validate_password(cls, v):
+        if not v or len(v.strip()) < 1:
+            raise ValueError("Password is required")
         return v.strip()
 
 
