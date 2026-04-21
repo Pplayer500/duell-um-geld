@@ -31,6 +31,7 @@ class CreatePlayerRequest(BaseModel):
     """Create new player account"""
     name: str
     role: str = "player"  # "player" or "host"
+    password: Optional[str] = None  # For hosts: individual password
     
 
 class UpdatePlayerUsernameRequest(BaseModel):

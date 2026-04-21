@@ -85,11 +85,17 @@ async def create_player(
         role = request.role if request.role in ["player", "host"] else "player"
         is_host = role == "host"
         
+        # Hash password if provided (for hosts)
+        password_hash = None
+        if is_host and request.password:
+            password_hash = hash_password(request.password)
+        
         player = PlayerDB(
             player_id=player_id,
             name=request.name.strip(),
             role=role,
             is_host=is_host,
+            password_hash=password_hash,
             awards=0,
             first_login_completed=False,
             is_online=False,
