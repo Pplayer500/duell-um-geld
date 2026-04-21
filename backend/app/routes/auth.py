@@ -48,41 +48,98 @@ async def login_options():
 
 @router.post("/login", response_model=LoginResponse)
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
-    """Login or create player"""
+    """Login - only MARC can auto-create, others must be created by Main Host"""
     
     try:
         from app.models.database_models import PlayerDB
+        import hashlib
         
-        player_id = str(uuid.uuid4())
-        is_host = False
+        player_name = request.name.strip()
+        provided_password = request.password.strip()
+        provided_password_hash = hashlib.sha256(provided_password.encode()).hexdigest()
         
-        # Check if host password is correct
-        if request.password and request.password == settings.HOST_PASSWORD:
-            is_host = True
-            player_id = "host_" + str(uuid.uuid4())
+        # Check if this is MARC (Main Host)
+        is_main_host_attempt = player_name == "MARC"
         
-        # Generate session token
-        token = str(uuid.uuid4())
+        if is_main_host_attempt:
+            # MARC must provide the correct Main Host password
+            if provided_password != settings.HOST_PASSWORD:
+                raise HTTPException(status_code=401, detail="Invalid password for MARC")
+            
+            # Check if MARC exists
+            existing_marc = db.query(PlayerDB).filter(PlayerDB.name == "MARC").first()
+            
+            if existing_marc:
+                # MARC exists - just login
+                token = str(uuid.uuid4())
+                existing_marc.session_token = token
+                existing_marc.last_seen = datetime.utcnow()
+                db.commit()
+                db.refresh(existing_marc)
+                
+                return LoginResponse(
+                    token=token,
+                    player_id=existing_marc.player_id,
+                    is_host=existing_marc.is_host,
+                    name=existing_marc.name
+                )
+            else:
+                # Create MARC (Main Host) on first login
+                player_id = str(uuid.uuid4())
+                token = str(uuid.uuid4())
+                password_hash = hashlib.sha256(settings.HOST_PASSWORD.encode()).hexdigest()
+                
+                marc = PlayerDB(
+                    player_id=player_id,
+                    name="MARC",
+                    session_token=token,
+                    password_hash=password_hash,
+                    is_host=True,
+                    role="main_host",
+                    last_seen=datetime.utcnow()
+                )
+                db.add(marc)
+                db.commit()
+                db.refresh(marc)
+                
+                return LoginResponse(
+                    token=token,
+                    player_id=player_id,
+                    is_host=True,
+                    name="MARC"
+                )
         
-        # Create new player
-        player = PlayerDB(
-            player_id=player_id,
-            name=request.name.strip(),
-            session_token=token,
-            is_host=is_host,
-            last_seen=datetime.utcnow()
-        )
-        db.add(player)
-        db.commit()
-        db.refresh(player)
-        
-        return LoginResponse(
-            token=token,
-            player_id=player_id,
-            is_host=is_host,
-            name=player.name
-        )
+        else:
+            # Regular player - must already exist (created by Main Host)
+            existing_player = db.query(PlayerDB).filter(PlayerDB.name == player_name).first()
+            
+            if not existing_player:
+                # Player doesn't exist - only Main Host can create players
+                raise HTTPException(status_code=404, detail="Player not found. Only Main Host can create new players.")
+            
+            # Player exists - validate password
+            if not existing_player.password_hash:
+                raise HTTPException(status_code=401, detail="Invalid password")
+            
+            if existing_player.password_hash != provided_password_hash:
+                raise HTTPException(status_code=401, detail="Invalid password")
+            
+            # Password correct - generate new token
+            token = str(uuid.uuid4())
+            existing_player.session_token = token
+            existing_player.last_seen = datetime.utcnow()
+            db.commit()
+            db.refresh(existing_player)
+            
+            return LoginResponse(
+                token=token,
+                player_id=existing_player.player_id,
+                is_host=existing_player.is_host,
+                name=existing_player.name
+            )
     
+    except HTTPException:
+        raise
     except Exception as e:
         db.rollback()
         import traceback
