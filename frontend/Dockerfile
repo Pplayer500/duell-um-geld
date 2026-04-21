@@ -28,11 +28,17 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Create nginx PID directory and logs directory
+RUN mkdir -p /var/run/nginx /var/log/nginx && \
+    touch /var/run/nginx.pid && \
+    chmod 666 /var/run/nginx.pid
+
 # Expose port for Railway
 EXPOSE 8080
 
-# Create nginx PID directory
-RUN mkdir -p /var/run/nginx
+# Health check
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:8080/health || exit 1
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
