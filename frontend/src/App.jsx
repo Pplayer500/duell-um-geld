@@ -4,6 +4,8 @@ import Login from './pages/Login'
 import GameLobby from './pages/GameLobby'
 import PokerTable from './pages/PokerTable'
 import MainHostDashboard from './pages/MainHostDashboard'
+import NotificationCenter from './components/NotificationCenter'
+import ConfirmModal from './components/ConfirmModal'
 import useGameStore from './store/gameStore'
 
 function App() {
@@ -45,6 +47,8 @@ function App() {
 
   return (
     <div className="app">
+      <NotificationCenter />
+      <ConfirmModal />
       {currentPage === 'login' && (
         <Login onLogin={handleLogin} />
       )}

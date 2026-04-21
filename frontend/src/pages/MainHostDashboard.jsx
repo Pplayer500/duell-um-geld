@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { API } from '../utils/api'
+import useGameStore from '../store/gameStore'
 import '../styles/dashboard.css'
 
 function MainHostDashboard({ onLogout }) {
@@ -14,6 +15,7 @@ function MainHostDashboard({ onLogout }) {
   const [newUsername, setNewUsername] = useState('')
   const [showHostPasswordModal, setShowHostPasswordModal] = useState(false)
   const [hostPassword, setHostPassword] = useState('')
+  const { addNotification } = useGameStore()
 
   const adminPassword = localStorage.getItem('admin_password') || 'Passwort'
 
@@ -34,7 +36,7 @@ function MainHostDashboard({ onLogout }) {
       setPlayers(response.data.players || [])
     } catch (err) {
       console.error('Error loading players:', err)
-      alert('Fehler beim Laden der Spieler')
+      addNotification('❌ Fehler beim Laden der Spieler', 'error')
     } finally {
       setLoading(false)
     }
@@ -55,7 +57,7 @@ function MainHostDashboard({ onLogout }) {
 
   const handleCreatePlayer = async () => {
     if (!newPlayerName.trim()) {
-      alert('Bitte Namen eingeben')
+      addNotification('⚠️ Bitte Namen eingeben', 'warning')
       return
     }
 
@@ -71,7 +73,7 @@ function MainHostDashboard({ onLogout }) {
 
   const handleConfirmHostPassword = () => {
     if (!hostPassword.trim()) {
-      alert('Bitte Host-Passwort eingeben')
+      addNotification('⚠️ Bitte Host-Passwort eingeben', 'warning')
       return
     }
     
@@ -96,10 +98,10 @@ function MainHostDashboard({ onLogout }) {
       setNewPlayerName('')
       setNewPlayerRole('player')
       loadPlayers()
-      alert('Spieler erstellt!')
+      addNotification('✅ Spieler erstellt!', 'success', '🎉')
     } catch (err) {
       console.error('Error creating player:', err)
-      alert('Fehler: ' + (err.response?.data?.detail || err.message))
+      addNotification('❌ Fehler: ' + (err.response?.data?.detail || err.message), 'error')
     } finally {
       setLoading(false)
     }
@@ -107,7 +109,7 @@ function MainHostDashboard({ onLogout }) {
 
   const handleSetPlayerPassword = async () => {
     if (!playerPassword.trim()) {
-      alert('Bitte Passwort eingeben')
+      addNotification('⚠️ Bitte Passwort eingeben', 'warning')
       return
     }
 
@@ -119,10 +121,10 @@ function MainHostDashboard({ onLogout }) {
         { headers: { 'X-Admin-Password': adminPassword } }
       )
       setPlayerPassword('')
-      alert('Spieler-Passwort gesetzt!')
+      addNotification('✅ Spieler-Passwort gesetzt!', 'success', '🔐')
     } catch (err) {
       console.error('Error setting password:', err)
-      alert('Fehler: ' + (err.response?.data?.detail || err.message))
+      addNotification('❌ Fehler: ' + (err.response?.data?.detail || err.message), 'error')
     } finally {
       setLoading(false)
     }
@@ -130,7 +132,7 @@ function MainHostDashboard({ onLogout }) {
 
   const handleUpdateUsername = async (playerId, playerName) => {
     if (!newUsername.trim()) {
-      alert('Bitte Benutzernamen eingeben')
+      addNotification('⚠️ Bitte Benutzernamen eingeben', 'warning')
       return
     }
 
@@ -144,10 +146,10 @@ function MainHostDashboard({ onLogout }) {
       setEditingUsername(null)
       setNewUsername('')
       loadPlayers()
-      alert('Benutzername aktualisiert!')
+      addNotification('✅ Benutzername aktualisiert!', 'success', '📄')
     } catch (err) {
       console.error('Error updating username:', err)
-      alert('Fehler: ' + (err.response?.data?.detail || err.message))
+      addNotification('❌ Fehler: ' + (err.response?.data?.detail || err.message), 'error')
     } finally {
       setLoading(false)
     }

@@ -25,6 +25,8 @@ const useGameStore = create((set) => ({
   
   // UI state
   selectedChips: {},
+  notifications: [],
+  confirmDialog: null,
   
   // Actions
   setToken: (token) => set({ token }),
@@ -45,6 +47,26 @@ const useGameStore = create((set) => ({
   setFoldedPlayers: (players) => set({ foldedPlayers: players }),
   setSelectedChips: (chips) => set({ selectedChips: chips }),
   
+  // Notifications
+  addNotification: (message, type = 'info', icon = '', duration = 4000) => 
+    set((state) => {
+      const id = Date.now() + Math.random()
+      return {
+        notifications: [...state.notifications, { id, message, type, icon, duration }]
+      }
+    }),
+  removeNotification: (id) =>
+    set((state) => ({
+      notifications: state.notifications.filter((n) => n.id !== id)
+    })),
+  
+  // Confirm Dialog
+  showConfirmDialog: (title, message, onConfirm, onCancel) =>
+    set({
+      confirmDialog: { title, message, onConfirm, onCancel }
+    }),
+  closeConfirmDialog: () => set({ confirmDialog: null }),
+  
   // Reset
   reset: () => set({
     token: null,
@@ -61,7 +83,9 @@ const useGameStore = create((set) => ({
     pot: 0,
     nextToAct: null,
     foldedPlayers: [],
-    selectedChips: {}
+    selectedChips: {},
+    notifications: [],
+    confirmDialog: null
   })
 }))
 

@@ -11,7 +11,7 @@ function GameLobby({ onStartGame }) {
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('dashboard')
-  const { isHost } = useGameStore()
+  const { isHost, addNotification, showConfirmDialog, closeConfirmDialog } = useGameStore()
 
   useEffect(() => {
     if (gameId) {
@@ -47,7 +47,7 @@ function GameLobby({ onStartGame }) {
       localStorage.setItem('gameId', newGameId)
     } catch (err) {
       console.error('Error creating game:', err)
-      alert('Fehler beim Erstellen des Spiels')
+      addNotification('❌ Fehler beim Erstellen des Spiels', 'error')
     } finally {
       setLoading(false)
     }
@@ -55,7 +55,7 @@ function GameLobby({ onStartGame }) {
 
   const updateGameId = async () => {
     if (!customGameId.trim()) {
-      alert('Bitte Game ID eingeben')
+      addNotification('⚠️ Bitte Game ID eingeben', 'warning')
       return
     }
     setLoading(true)
@@ -66,7 +66,7 @@ function GameLobby({ onStartGame }) {
       localStorage.setItem('gameId', customGameId)
     } catch (err) {
       console.error('Error updating game ID:', err)
-      alert('Fehler beim Aktualisieren der Game ID')
+      addNotification('❌ Fehler beim Aktualisieren der Game ID', 'error')
     } finally {
       setLoading(false)
     }
@@ -74,11 +74,11 @@ function GameLobby({ onStartGame }) {
 
   const joinGame = async () => {
     if (!joinGameId.trim()) {
-      alert('Bitte Game ID eingeben')
+      addNotification('⚠️ Bitte Game ID eingeben', 'warning')
       return
     }
     if (!playerName.trim()) {
-      alert('Bitte Namen eingeben')
+      addNotification('⚠️ Bitte Namen eingeben', 'warning')
       return
     }
     setLoading(true)
@@ -95,7 +95,8 @@ function GameLobby({ onStartGame }) {
       localStorage.setItem('gameId', joinGameId)
       setJoinGameId('')
     } catch (err) {
-      alert('Fehler beim Beitreten: ' + (err.response?.data?.detail || 'Unbekannter Fehler'))
+      const errorMsg = err.response?.data?.detail || 'Unbekannter Fehler'
+      addNotification('❌ Fehler beim Beitreten: ' + errorMsg, 'error')
       console.error('Error joining game:', err)
     } finally {
       setLoading(false)
@@ -111,21 +112,25 @@ function GameLobby({ onStartGame }) {
       onStartGame()
     } catch (err) {
       console.error('Error starting game:', err)
-      alert('Fehler beim Starten des Spiels')
+      addNotification('❌ Fehler beim Starten des Spiels', 'error')
     } finally {
       setLoading(false)
     }
   }
 
   const handleLogout = () => {
-    if (window.confirm('Wirklicht auslögen?')) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('player_id')
-      localStorage.removeItem('is_host')
-      localStorage.removeItem('player_name')
-      localStorage.removeItem('gameId')
-      window.location.reload()
-    }
+    showConfirmDialog(
+      '🚪 Ausloggen',
+      'Wirklich ausloggen?',
+      () => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('player_id')
+        localStorage.removeItem('is_host')
+        localStorage.removeItem('player_name')
+        localStorage.removeItem('gameId')
+        window.location.reload()
+      }
+    )
   }
 
   // Spieler-Join-Screen
