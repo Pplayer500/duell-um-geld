@@ -1,8 +1,9 @@
 # Build stage
 FROM node:18-alpine AS builder
 
-# Force rebuild - break cache
+# Force rebuild - break cache by using ARG in RUN command
 ARG BUILD_DATE
+RUN echo "Build timestamp: ${BUILD_DATE:-$(date)}" > /dev/null
 
 WORKDIR /app
 
