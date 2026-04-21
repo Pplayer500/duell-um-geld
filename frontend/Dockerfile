@@ -28,8 +28,11 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port
-EXPOSE 3000
+# Expose port for Railway
+EXPOSE 8080
+
+# Create nginx PID directory
+RUN mkdir -p /var/run/nginx
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
