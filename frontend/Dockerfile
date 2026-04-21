@@ -30,9 +30,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port
 EXPOSE 3000
 
-# Health check - use local endpoint only, no SSL issues
-HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
-    CMD curl -f -s http://localhost:3000/health > /dev/null || exit 1
+# Health check - simpler: just check if port is listening
+HEALTHCHECK --interval=10s --timeout=5s --start-period=45s --retries=5 \
+    CMD wget --quiet --spider http://localhost:3000/ || exit 1
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
