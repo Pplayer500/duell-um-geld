@@ -113,7 +113,8 @@ function MainHostDashboard({ onLogout }) {
       setNewPlayerName('')
       setNewPlayerRole('player')
       loadPlayers()
-      addNotification('✅ Spieler erstellt!', 'success', '🎉')
+      const successMsg = role === 'host' ? '✅ Host erstellt!' : '✅ Spieler erstellt!'
+      addNotification(successMsg, 'success', '🎉')
     } catch (err) {
       console.error('Error creating player:', err)
       addNotification('❌ Fehler: ' + (err.response?.data?.detail || err.message), 'error')
@@ -225,7 +226,7 @@ function MainHostDashboard({ onLogout }) {
               <h3>Spieler-Passwort</h3>
               <div className="password-input-group">
                 <input
-                  type="password"
+                  type="text"
                   placeholder="Passwort für alle Spieler"
                   value={playerPassword}
                   onChange={(e) => setPlayerPassword(e.target.value)}
@@ -239,6 +240,11 @@ function MainHostDashboard({ onLogout }) {
                   Speichern
                 </button>
               </div>
+              {playerPassword && (
+                <p style={{ marginTop: '10px', color: '#666', fontSize: '12px' }}>
+                  Aktuelles Passwort: <strong>{playerPassword}</strong>
+                </p>
+              )}
             </div>
 
             {/* CREATE NEW PLAYER */}

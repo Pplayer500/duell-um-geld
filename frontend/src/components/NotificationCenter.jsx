@@ -23,7 +23,7 @@ function NotificationCenter() {
   useEffect(() => {
     if (notifications.length > visibleNotifications.length) {
       const newNotification = notifications[notifications.length - 1]
-      setVisibleNotifications([...visibleNotifications, newNotification])
+      setVisibleNotifications((prev) => [...prev, newNotification])
 
       const timer = setTimeout(() => {
         handleRemoveNotification(newNotification.id)
@@ -31,7 +31,7 @@ function NotificationCenter() {
 
       return () => clearTimeout(timer)
     }
-  }, [notifications, visibleNotifications, removeNotification])
+  }, [notifications])
 
   return (
     <div className="notification-center">
