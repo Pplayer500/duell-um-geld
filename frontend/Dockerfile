@@ -27,5 +27,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port
 EXPOSE 3000
 
-# Run nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Run entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
