@@ -120,7 +120,7 @@ function GameLobby({ onStartGame }) {
 
   const handleLogout = () => {
     showConfirmDialog(
-      '🚪 Ausloggen',
+      'Ausloggen',
       'Wirklich ausloggen?',
       () => {
         localStorage.removeItem('token')

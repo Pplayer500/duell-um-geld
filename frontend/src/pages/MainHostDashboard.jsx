@@ -15,7 +15,24 @@ function MainHostDashboard({ onLogout }) {
   const [newUsername, setNewUsername] = useState('')
   const [showHostPasswordModal, setShowHostPasswordModal] = useState(false)
   const [hostPassword, setHostPassword] = useState('')
-  const { addNotification } = useGameStore()
+  const { addNotification, showConfirmDialog } = useGameStore()
+
+  const adminPassword = localStorage.getItem('admin_password') || 'Passwort'
+
+  const handleLogout = () => {
+    showConfirmDialog(
+      'Ausloggen',
+      'Wirklich ausloggen?',
+      () => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('player_id')
+        localStorage.removeItem('is_host')
+        localStorage.removeItem('player_name')
+        localStorage.removeItem('gameId')
+        window.location.reload()
+      }
+    )
+  }
 
   const adminPassword = localStorage.getItem('admin_password') || 'Passwort'
 
@@ -158,8 +175,8 @@ function MainHostDashboard({ onLogout }) {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h1>🎲 Main Host Dashboard</h1>
-        <button onClick={onLogout} className="btn-logout-main">
+        <h1>Main Host Dashboard</h1>
+        <button onClick={handleLogout} className="btn-logout-main">
           Ausloggen
         </button>
       </div>
