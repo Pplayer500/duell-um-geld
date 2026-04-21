@@ -11,6 +11,7 @@ function MainHostDashboard({ onLogout }) {
   const [newPlayerName, setNewPlayerName] = useState('')
   const [newPlayerRole, setNewPlayerRole] = useState('player')
   const [playerPassword, setPlayerPassword] = useState('')
+  const [currentPlayerPassword, setCurrentPlayerPassword] = useState('')
   const [editingUsername, setEditingUsername] = useState(null)
   const [newUsername, setNewUsername] = useState('')
   const [showHostPasswordModal, setShowHostPasswordModal] = useState(false)
@@ -49,6 +50,17 @@ function MainHostDashboard({ onLogout }) {
         headers: { 'X-Admin-Password': adminPassword }
       })
       setPlayers(response.data.players || [])
+      
+      // Auch das aktuelle Passwort laden
+      try {
+        const passResponse = await API.get('/api/accounts/admin/player-password', {
+          headers: { 'X-Admin-Password': adminPassword }
+        })
+        setCurrentPlayerPassword(passResponse.data.password)
+      } catch (err) {
+        // Passwort existiert noch nicht
+        setCurrentPlayerPassword('')
+      }
     } catch (err) {
       console.error('Error loading players:', err)
       addNotification('❌ Fehler beim Laden der Spieler', 'error')
@@ -136,6 +148,7 @@ function MainHostDashboard({ onLogout }) {
         { password: playerPassword },
         { headers: { 'X-Admin-Password': adminPassword } }
       )
+      setCurrentPlayerPassword(playerPassword)
       setPlayerPassword('')
       addNotification('✅ Spieler-Passwort gesetzt!', 'success', '🔐')
     } catch (err) {

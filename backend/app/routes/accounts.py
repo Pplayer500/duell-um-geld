@@ -18,6 +18,9 @@ import hashlib
 
 router = APIRouter(prefix="/api/accounts", tags=["accounts"])
 
+# Global variable to store current player password
+current_player_password = None
+
 
 def hash_password(password: str) -> str:
     """Hash password using SHA-256"""
@@ -40,13 +43,16 @@ async def set_player_password(
     db: Session = Depends(get_db)
 ):
     """Set password for all players (Main Host only)"""
+    global current_player_password
     
     if not verify_main_host(admin_password):
         raise HTTPException(status_code=403, detail="Unauthorized")
     
     try:
-        # Store hashed password in settings or config
-        # For MVP: just update records
+        # Store the plaintext password for display purposes
+        current_player_password = request.password
+        
+        # Store hashed password in database
         password_hash = hash_password(request.password)
         
         # Update all player accounts
@@ -55,7 +61,7 @@ async def set_player_password(
             player.password_hash = password_hash
         
         db.commit()
-        return {"status": "success", "message": f"Password set for {len(players)} players"}
+        return {"status": "success", "message": f"Password set for {len(players)} players", "password": request.password}
     
     except Exception as e:
         db.rollback()
@@ -283,3 +289,19 @@ async def get_current_account(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/admin/player-password")
+async def get_player_password(
+    admin_password: str = Header(..., alias="X-Admin-Password")
+):
+    """Get current player password (Main Host only)"""
+    global current_player_password
+    
+    if not verify_main_host(admin_password):
+        raise HTTPException(status_code=403, detail="Unauthorized")
+    
+    if not current_player_password:
+        raise HTTPException(status_code=404, detail="No player password set yet")
+    
+    return {"password": current_player_password}

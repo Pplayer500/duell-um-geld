@@ -17,10 +17,23 @@ function App() {
     const token = localStorage.getItem('token')
     if (token) {
       const isHost = localStorage.getItem('is_host') === 'true'
+      const playerName = localStorage.getItem('player_name')
+      const gameId = localStorage.getItem('gameId')
+      
       setToken(token)
       setIsHost(isHost)
-      // Immer zur Lobby beim Reload - GameLobby wird überprüfen, ob Spiel bereits gestartet wurde
-      setCurrentPage('lobby')
+      
+      // Bestimme die richtige Seite basierend auf dem aktuellen Zustand
+      if (playerName === 'MARC') {
+        // Main Host geht zum Dashboard
+        setCurrentPage('dashboard')
+      } else if (gameId) {
+        // Wenn ein Spiel aktiv ist, zum Spiel zurück
+        setCurrentPage('game')
+      } else {
+        // Sonst zur Lobby
+        setCurrentPage('lobby')
+      }
     }
   }, [])
 
