@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import GameLobby from './pages/GameLobby'
 import PokerTable from './pages/PokerTable'
 import MainHostDashboard from './pages/MainHostDashboard'
+import PlayerDashboard from './pages/PlayerDashboard'
 import NotificationCenter from './components/NotificationCenter'
 import ConfirmModal from './components/ConfirmModal'
 import useGameStore from './store/gameStore'
@@ -31,8 +32,8 @@ function App() {
         // Wenn ein Spiel aktiv ist, zum Spiel zurück
         setCurrentPage('game')
       } else {
-        // Sonst zur Lobby
-        setCurrentPage('lobby')
+        // Sonst zum Player-Dashboard
+        setCurrentPage('player-dashboard')
       }
     }
   }, [])
@@ -47,8 +48,8 @@ function App() {
     if (playerName === 'MARC' || isMainHost) {
       setCurrentPage('dashboard')
     } else {
-      // Andere Benutzer gehen zur Lobby
-      setCurrentPage('lobby')
+      // Andere Benutzer gehen zum Player-Dashboard
+      setCurrentPage('player-dashboard')
     }
   }
 
@@ -67,6 +68,12 @@ function App() {
       )}
       {currentPage === 'dashboard' && (
         <MainHostDashboard onLogout={handleLogout} />
+      )}
+      {currentPage === 'player-dashboard' && (
+        <PlayerDashboard
+          onJoinGame={() => setCurrentPage('game')}
+          onLogout={handleLogout}
+        />
       )}
       {currentPage === 'lobby' && (
         <GameLobby onStartGame={() => setCurrentPage('game')} />
