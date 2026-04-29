@@ -72,6 +72,12 @@ class GameRepository:
         self.db.execute(stmt)
         self.db.commit()
         return True
+    
+    def get_all_games(self) -> list:
+        """Get all games"""
+        stmt = select(GameDB)
+        result = self.db.execute(stmt)
+        return result.scalars().all()
 
 
 class PlayerRepository:
