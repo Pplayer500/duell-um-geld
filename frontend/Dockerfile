@@ -7,6 +7,11 @@ RUN echo "Build timestamp: ${BUILD_DATE:-$(date)}" > /dev/null
 
 WORKDIR /app
 
+# Install build dependencies for native modules (node-gyp)
+# include python3, make and g++ so alpine builder can compile native addons
+RUN apk add --no-cache python3 make g++ && \
+    ln -sf /usr/bin/python3 /usr/bin/python
+
 # Copy package files
 COPY package*.json ./
 
