@@ -751,7 +751,7 @@ function PlayerDashboard({ onJoinGame, onLogout }) {
           playsInline
           preload="auto"
         >
-          <source src="/background.mp4" type="video/mp4" />
+          <source src="/videos/login_background_169.mp4" type="video/mp4" />
         </video>
         <video
           ref={bgVideoBRef}
@@ -761,7 +761,7 @@ function PlayerDashboard({ onJoinGame, onLogout }) {
           playsInline
           preload="auto"
         >
-          <source src="/background.mp4" type="video/mp4" />
+          <source src="/videos/login_background_916.mp4" type="video/mp4" />
         </video>
         <div className="dashboard-header">
           <div className="header-content">
