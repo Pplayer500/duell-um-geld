@@ -36,5 +36,5 @@ RUN mkdir -p /var/run/nginx /var/log/nginx && \
 # Expose port for Railway
 EXPOSE 8080
 
-# Start nginx
+# Start nginx - Railway compatible
 CMD ["nginx", "-g", "daemon off;"]
