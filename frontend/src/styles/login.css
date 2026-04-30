@@ -16,6 +16,25 @@
   height: 100%;
   object-fit: cover;
   z-index: 1;
+  pointer-events: none;
+}
+
+.login-bg-video-landscape {
+  display: block;
+}
+
+.login-bg-video-portrait {
+  display: none;
+}
+
+@media (orientation: portrait), (max-aspect-ratio: 1/1) {
+  .login-bg-video-landscape {
+    display: none;
+  }
+
+  .login-bg-video-portrait {
+    display: block;
+  }
 }
 
 .login-card {

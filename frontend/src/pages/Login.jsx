@@ -23,11 +23,18 @@ function Login({ onLogin }) {
       const isMainHost = playerName === 'MARC'
 
       // Save to localStorage
-      localStorage.setItem('token', token)
+      localStorage.removeItem('account_restriction_reason')
+      localStorage.removeItem('account_restriction_message')
+      sessionStorage.setItem('token', token)
+      localStorage.removeItem('token')
       localStorage.setItem('player_id', player_id)
       localStorage.setItem('is_host', is_host)
       localStorage.setItem('player_name', playerName)
-      localStorage.setItem('admin_password', hostPassword || 'Passwort')
+      
+      // Only store admin password if logging in as MARC
+      if (isMainHost) {
+        localStorage.setItem('admin_password', hostPassword)
+      }
       
       onLogin(token, is_host, playerName, isMainHost)
     } catch (err) {
@@ -39,12 +46,16 @@ function Login({ onLogin }) {
 
   return (
     <div className="login-container">
-      <video className="login-bg-video" autoPlay muted loop playsinline>
+      <video className="login-bg-video login-bg-video-landscape" autoPlay muted loop playsInline preload="auto">
+        <source src="/videos/login_background_169.mp4" type="video/mp4" />
+        <source src="/videos/login_background.mp4" type="video/mp4" />
+      </video>
+      <video className="login-bg-video login-bg-video-portrait" autoPlay muted loop playsInline preload="auto">
+        <source src="/videos/login_background_916.mp4" type="video/mp4" />
         <source src="/videos/login_background.mp4" type="video/mp4" />
       </video>
       <div className="login-card">
-        <h1><span>🎲</span><span>Duell um die Geld</span><span>🎲</span></h1>
-        <p className="subtitle">Wer nicht blufft, verliert! 😎</p>
+        <h1>Duell um die Geld</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
