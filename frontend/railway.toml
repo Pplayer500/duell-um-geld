@@ -1,0 +1,15 @@
+# Railway config specific to frontend service
+
+[build]
+builder = "dockerfile"
+
+[build.dockerfile]
+path = "Dockerfile"
+
+[deploy]
+port = 8080
+startCommand = "nginx -g 'daemon off;'"
+
+[env]
+# Frontend should use backend public url if available; leave placeholder
+VITE_API_URL = "${{ Railway.Backend.RAILWAY_PUBLIC_URL }}"
