@@ -21,8 +21,14 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Ensure videos directory exists and copy any videos if they exist locally
+RUN mkdir -p public/videos || true
+
 # Build for production
 RUN npm run build
+
+# Ensure videos are in dist (they should be copied by Vite from public/videos)
+RUN if [ -d "dist/videos" ]; then echo "Videos already in dist"; else mkdir -p dist/videos && if [ -d "public/videos" ]; then cp public/videos/* dist/videos/ || true; fi; fi
 
 # Production stage
 FROM nginx:alpine
