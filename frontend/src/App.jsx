@@ -9,11 +9,32 @@ import NotificationCenter from './components/NotificationCenter'
 import ConfirmModal from './components/ConfirmModal'
 import useGameStore from './store/gameStore'
 
+const APP_BUILD_ID = __BUILD_ID__
+
+const clearAppSession = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('is_host')
+  localStorage.removeItem('player_name')
+  localStorage.removeItem('player_id')
+  localStorage.removeItem('gameId')
+  localStorage.removeItem('admin_password')
+  localStorage.removeItem('app_build_id')
+  sessionStorage.removeItem('token')
+}
+
 function App() {
   const [currentPage, setCurrentPage] = useState('login')
   const { gameState, setToken, setIsHost } = useGameStore()
 
   useEffect(() => {
+    const storedBuildId = localStorage.getItem('app_build_id')
+    if (storedBuildId !== APP_BUILD_ID) {
+      clearAppSession()
+      localStorage.setItem('app_build_id', APP_BUILD_ID)
+      setCurrentPage('login')
+      return
+    }
+
     // Check if user is already logged in (token in localStorage)
     const token = localStorage.getItem('token')
     if (token) {
@@ -54,8 +75,7 @@ function App() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('is_host')
+    clearAppSession()
     setCurrentPage('login')
   }
 
